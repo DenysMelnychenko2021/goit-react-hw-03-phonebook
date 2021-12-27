@@ -31,7 +31,7 @@ export class Phonebook extends Component {
     else if (
       contacts.find(contact => newContact.inputNumber === contact.inputNumber)
     )
-      alert(`${newContact.inputNumber} is already in contacts`);
+      alert(` this number ${newContact.inputNumber} is already in contacts`);
     else
       this.setState(({ contacts }) => ({
         contacts: [{ ...newContact }, ...contacts],
