@@ -32,11 +32,8 @@ export class ContactForm extends Component {
       agreed: false,
     });
 
-  /* numberInputId = nanoid(); */
-
   render() {
-    const { handleSubmit, handleChange /*  nameInputId,  numberInputId */ } =
-      this;
+    const { handleSubmit, handleChange } = this;
 
     const { inputName, inputNumber, agreed } = this.state;
 
