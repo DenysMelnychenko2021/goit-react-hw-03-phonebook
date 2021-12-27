@@ -1,27 +1,49 @@
 import { Component } from 'react';
 
-import { Container } from 'components/container';
-import { Section } from 'components/section';
-import { ContactForm } from 'components/contactForm';
-import { Contacts } from 'components/contacts';
-import { Filter } from 'components/filter';
-import { ContactList } from 'components/contactsList';
+import { Container } from 'test/phonebook/components/container';
+import { Section } from 'test/phonebook/components/section';
+import { ContactForm } from 'test/phonebook/components/contactForm';
+import { Contacts } from 'test/phonebook/components/contacts';
+import { Filter } from 'test/phonebook/components/filter';
+import { ContactList } from 'test/phonebook/components/contactsList';
+import { Modal } from 'test/modal';
+import { Clock } from 'test/clock';
 
 import data from 'data/data.json';
 
 export class Phonebook extends Component {
-  state = { ...data, filterValue: '' };
+  state = { ...data, filterValue: '', showModal: false };
 
   componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parseContacts = JSON.parse(contacts);
+    console.log('Mount');
 
+    const contacts = localStorage.getItem('contacts');
+    console.log('get localStorage', contacts);
+    const parseContacts = JSON.parse(contacts);
+    console.log('parse', parseContacts);
+
+    /*  setTimeout(() => {
+      this.setState({ contacts: parseContacts });
+    }, 5000); */
+    //this.setState({ contacts: parseContacts });
+    /* if (parseContacts) {
+      this.setState({ contacts: parseContacts });
+    } */
     parseContacts && this.setState({ contacts: parseContacts });
   }
 
-  componentDidUpdate(prevState) {
-    this.state.contacts !== prevState.contacts &&
+  componentDidUpdate(prevProps, prevState) {
+    console.log('Update');
+    console.log('prevState', prevState.contacts);
+    console.log('state', this.state.contacts);
+
+    //this.setState() в render и в update setState вызывать нельзя, будет зацикленность
+
+    if (this.state.contacts !== prevState.contacts) {
+      console.log('Обновился масив contacts');
+
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
   }
 
   addContactSubmit = newContact => {
@@ -62,16 +84,43 @@ export class Phonebook extends Component {
     }, 500);
   };
 
-  render() {
-    const { addContactSubmit, getClickDelete, handleFilterChange, getBlur } =
-      this;
+  toggleModal = () =>
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
 
-    const { contacts, filterValue } = this.state;
+  render() {
+    console.log('Phonebook render');
+    const {
+      addContactSubmit,
+      getClickDelete,
+      handleFilterChange,
+      getBlur,
+      toggleModal,
+    } = this;
+
+    const { contacts, filterValue, showModal } = this.state;
 
     const visibleContacts = this.getHandlerFilter();
 
     return (
       <Container title="Phonebook">
+        <button type="button" onClick={toggleModal}>
+          Открыть модалку
+        </button>
+        {showModal && (
+          <Modal closeModal={toggleModal}>
+            <Clock />
+            <p>
+              Контент модалки: Lorem ipsum dolor sit, amet consectetur
+              adipisicing elit. Cupiditate sequi fuga assumenda sed quis, culpa
+              reprehenderit rem perferendis asperiores sunt blanditiis, amet
+              autem saepe laborum, ducimus eligendi nisi beatae esse?
+            </p>
+            <button type="button" onClick={toggleModal}>
+              Закрыть
+            </button>
+          </Modal>
+        )}
+
         <Section>
           <ContactForm onSubmitContact={addContactSubmit} />
         </Section>
